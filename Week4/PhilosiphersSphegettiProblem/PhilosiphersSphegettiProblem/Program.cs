@@ -1,21 +1,38 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Threading;
 
 namespace PhilosiphersSphegettiProblem
 {
-    public class Increment
+    public class Bowl
     {
-        static public void Add(Semaphore semaphore) 
+        private int pasta = 10;
+        Random random = new Random();
+        Semaphore Forks;
+
+        public Bowl(Semaphore semaphore)
         {
-            semaphore.WaitOne();
-            int tempValue = Program.value + 1;
-            Program.value = tempValue;
+            this.Forks = semaphore;
+        }
 
-            Console.WriteLine("Previous Value: " + (Program.value - 1));
-            Console.WriteLine("Current Value: " + Program.value);
+        public void Think()
+        {
+            Thread.Sleep(random.Next(501));
+        }
 
-            semaphore.Release();
+        public void Eat(object count) 
+        {
+            while (pasta > 0)
+            {
+                if (pasta > 0)
+                {
+                    Forks.WaitOne();
+                    Console.WriteLine("Philosopher {0}  knicks a fork. ", count);
+                    pasta--;
+                    Console.WriteLine("Philosopher {0}  eats. ", count);
+                    Console.WriteLine("Philosopher {0}  puts down fork. ", count);
+                }
+                Think();
+            }
         }
     }
 
@@ -25,15 +42,17 @@ namespace PhilosiphersSphegettiProblem
         public static int value = 5;
         static void Main(string[] args)
         {
-            semaphore = new Semaphore(0,1);
-            Thread thread1 = new Thread(new ThreadStart(() => Increment.Add(semaphore)));
-            Thread thread2 = new Thread(new ThreadStart(() => Increment.Add(semaphore)));
-
-            thread1.Start();
-            thread2.Start();
+            semaphore = new Semaphore(0,2);
+            Bowl Spaghetti = new Bowl(semaphore);
+            for (int i = 1; i < 5; i++)
+            {
+                Thread Philosopher = new Thread(new ParameterizedThreadStart(Spaghetti.Eat));
+                Philosopher.Start(i);
+                Console.WriteLine("Philosopher {0} Sits", i);
+            }
 
             Thread.Sleep(500);
-            semaphore.Release(1);
+            semaphore.Release(2);
         }
     }
 }
