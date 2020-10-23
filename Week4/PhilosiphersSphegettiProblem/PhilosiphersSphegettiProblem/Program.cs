@@ -1,104 +1,39 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Threading;
-using System.Xml.Schema;
 
 namespace PhilosiphersSphegettiProblem
 {
-    public class Buffer
+    public class Increment
     {
-        private int data;
-        private bool empty = true;
-
-        public void Read(ref int data)
+        static public void Add(Semaphore semaphore) 
         {
-            lock (this)
-            {
-                //if buffer is empty
-                if (empty)
-                {
-                    Monitor.Wait(this);
-                }
-                empty = true;
-                data = this.data;
-                Console.WriteLine("         " + data + " read");
-                Monitor.Pulse(this);
-            }
+            semaphore.WaitOne();
+            int tempValue = Program.value + 1;
+            Program.value = tempValue;
+
+            Console.WriteLine("Previous Value: " + (Program.value - 1));
+            Console.WriteLine("Current Value: " + Program.value);
+
+            semaphore.Release();
         }
-
-        public void Write(int data)
-        {
-            lock (this)
-            {
-                //if buffer is full
-                if (!empty)
-                {
-                    Monitor.Wait(this);
-                }
-                empty = false;
-                this.data = data;
-                Console.WriteLine(data + " write");
-                Monitor.Pulse(this);
-            }
-        }
-    }
-
-    public class Producer
-    {
-        private Buffer buffer;
-        private Random random = new Random();
-
-        public Producer(Buffer buffer)
-        {
-            this.buffer = buffer;
-        }
-
-        public void Production()
-        {
-            for (int i = 1; i < 10; i++)
-            {
-                //delay up to 500ms
-                Thread.Sleep(random.Next(501));
-                buffer.Write(i);
-            }
-        }
-    }
-
-    public class Consumer
-    {
-        private Buffer buffer;
-        private Random random = new Random();
-
-        public Consumer(Buffer buffer)
-        {
-            this.buffer = buffer;
-        }
-
-        public void Consumption()
-        {
-            int data = -1;
-            for (int i = 1; i < 10; i++)
-            {
-                //delay up to 500ms
-                Thread.Sleep(random.Next(501));
-                buffer.Read(ref data);
-                data = -1;
-            }
-        }
-
     }
 
     class Program
     {
+        public static Semaphore semaphore;
+        public static int value = 5;
         static void Main(string[] args)
         {
-            Buffer buff = new Buffer();
-            Producer prod = new Producer(buff);
-            Consumer con = new Consumer(buff);
+            semaphore = new Semaphore(0,1);
+            Thread thread1 = new Thread(new ThreadStart(() => Increment.Add(semaphore)));
+            Thread thread2 = new Thread(new ThreadStart(() => Increment.Add(semaphore)));
 
-            Thread ProducerThread = new Thread(new ThreadStart(prod.Production));
-            Thread ConsumerThread = new Thread(new ThreadStart(con.Consumption));
-            ProducerThread.Start();
-            ConsumerThread.Start();
+            thread1.Start();
+            thread2.Start();
+
+            Thread.Sleep(500);
+            semaphore.Release(1);
         }
     }
 }
