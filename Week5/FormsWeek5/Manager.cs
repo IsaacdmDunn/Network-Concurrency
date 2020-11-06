@@ -25,8 +25,17 @@ namespace FormsWeek5
 
             for (int i = 0; i < 10; i++)
             {
-                SendMessageToAll("Message");
-                Thread.Sleep(500);
+                if (i % 2 ==0)
+                {
+                    SendMessageToAll("Message", "ted");
+                    Thread.Sleep(500);
+                }
+                else
+                {
+                    SendMessageToAll("Message", "greg");
+                    Thread.Sleep(500);
+                }
+                
             }
 
             FormThread1.Join();
@@ -38,10 +47,11 @@ namespace FormsWeek5
             terminal.ShowDialog();
         }
 
-        void SendMessageToAll(string message)
+        void SendMessageToAll(string message, string name )
         {
-            m_Terminal1.UpdateChatWindow(message);
-            m_Terminal2.UpdateChatWindow(message);
+            string finalMessage = name + ": " + message;
+            m_Terminal1.UpdateChatWindow(finalMessage);
+            m_Terminal2.UpdateChatWindow(finalMessage);
         }
     }
 }
