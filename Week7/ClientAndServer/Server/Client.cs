@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    class Client
+    public class Client
     {
         Socket socket;
         NetworkStream stream;
@@ -17,20 +17,22 @@ namespace Server
         object readLock;
         object writeLock;
 
-        public Client(Socket socket)
+        public Client(Socket _socket)
         {
-            object mWriteLock = new object();
-            Socket mSocket = socket;
-            NetworkStream mStream = stream;
-            StreamReader mReader = reader;
-            StreamWriter mWriter = writer;
+            socket = _socket;
+            stream = new NetworkStream(_socket);
+            writer = new StreamWriter(stream, Encoding.UTF8);
+            reader = new StreamReader(stream, Encoding.UTF8);
+            readLock = new object();
+            writeLock = new object();
+
         }
 
         public void Close()
         {
-            stream.Close();
             reader.Close();
             writer.Close();
+            stream.Close();
             socket.Close();
         }
 
@@ -43,7 +45,7 @@ namespace Server
         public void Send(string message)
         {
             lock (writeLock) ;
-            writer.WriteLine("hello");
+            writer.WriteLine(message);
             writer.Flush();
         }
 

@@ -31,8 +31,7 @@ namespace Server
             clients = new ConcurrentBag<Client>();
             Socket socket;
             tcpListener.Start();
-            int i = 0; 
-            while (i == clients.Count())
+            while (true)
             {
                 Console.WriteLine("Searching");
                 socket = tcpListener.AcceptSocket();
@@ -41,7 +40,6 @@ namespace Server
                 clients.Add(client);
                 Thread thread = new Thread(() => { ClientMethod(client); });
                 thread.Start();
-                i++;
             }
 
             
@@ -63,7 +61,7 @@ namespace Server
                 //StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                 //StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
 
-                client.Send(receiveMessage);
+                client.Send("hi");
 
                 while ((receiveMessage = client.Read()) != null)
                 {

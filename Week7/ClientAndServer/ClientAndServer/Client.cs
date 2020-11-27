@@ -1,15 +1,18 @@
-﻿using System;
+﻿using ClientAndServer;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Server
 {
-    class Client
+    public class Client
     {
+        ClientForm mClientForm;
         TcpClient tcpClient;
         NetworkStream stream;
         StreamWriter writer;
@@ -43,31 +46,45 @@ namespace Server
 
         public void Run()
         {
-            string userInput;
-            ProcessServerResponse();
-            Console.WriteLine("Enter data");
+            mClientForm = new ClientForm(this);
+            
+            Thread threads = new Thread(ProcessServerResponse);
+            
+            threads.Start();
+            mClientForm.ShowDialog();
 
-            while ((userInput = Console.ReadLine()) != null)
-            {
-                writer.WriteLine(userInput);
-                writer.Flush();
+            //Console.WriteLine("Enter data");
 
-                ProcessServerResponse();
+            //while ((userInput = Console.ReadLine()) != null)
+            //{
+            //    writer.WriteLine(userInput);
+            //    writer.Flush();
 
-                if (userInput == "end")
-                {
-                    break;
-                }
+            //    ProcessServerResponse();
 
-            }
+            //    if (userInput == "end")
+            //    {
+            //        break;
+            //    }
+
+            //}
             tcpClient.Close();
         }
 
         private void ProcessServerResponse()
         {
-            Console.WriteLine("Server says: " + reader.ReadLine());
-            Console.WriteLine();
+            while (reader != null)
+            {
+                mClientForm.UpdateChatWindow(reader.ReadLine());
+            }
+            
 
+        }
+
+        public void SendMessage(string message, string username)
+        {
+            writer.WriteLine(username + " says: " + message);
+            writer.Flush();
         }
     }
 }
