@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using Packets;
 
 namespace Server
 {
@@ -12,8 +14,9 @@ namespace Server
     {
         Socket socket;
         NetworkStream stream;
-        StreamReader reader;
-        StreamWriter writer;
+        BinaryReader reader;
+        BinaryWriter writer;
+        BinaryFormatter formatter;
         object readLock;
         object writeLock;
 
@@ -21,8 +24,9 @@ namespace Server
         {
             socket = _socket;
             stream = new NetworkStream(_socket);
-            writer = new StreamWriter(stream, Encoding.UTF8);
-            reader = new StreamReader(stream, Encoding.UTF8);
+            writer = new BinaryWriter(stream, Encoding.UTF8);
+            reader = new BinaryReader(stream, Encoding.UTF8);
+            formatter = new BinaryFormatter();
             readLock = new object();
             writeLock = new object();
 
@@ -30,23 +34,46 @@ namespace Server
 
         public void Close()
         {
+            socket.Shutdown(SocketShutdown.Both);
             reader.Close();
             writer.Close();
             stream.Close();
             socket.Close();
         }
 
-        public string Read()
+        public Packet Read()
         {
-            lock (readLock) ;
-            return reader.ReadLine();
+            lock (readLock)
+            {
+                int numberOfBytes = reader.ReadInt32();
+                if (numberOfBytes != -1)
+                {
+                    byte[] buffer = reader.ReadBytes(numberOfBytes);
+                    MemoryStream stream = new MemoryStream(buffer);
+                    return formatter.Deserialize(stream) as Packet;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            //return reader.ReadLine();
         }
 
-        public void Send(string message)
+        public void Send(Packet message)
         {
-            lock (writeLock) ;
-            writer.WriteLine(message);
-            writer.Flush();
+            lock (writeLock)
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                formatter.Serialize(memoryStream, message);
+                byte[] bufffer = memoryStream.GetBuffer();
+
+                writer.Write(bufffer.Length);
+                writer.Write(bufffer);
+                writer.Flush();
+            }
+            //writer.WriteLine(message);
+            //writer.Flush();
         }
 
 

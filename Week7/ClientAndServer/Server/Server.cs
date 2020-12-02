@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Packets;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -52,28 +53,21 @@ namespace Server
 
         private void ClientMethod(Client client)
         {
+            Packet packet;
+            //client.Send("hi");
+            
             try
             {
-
-
-                string receiveMessage = "";
-                //NetworkStream stream = new NetworkStream(socket, true);
-                //StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                //StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
-
-                client.Send("hi");
-
-                while ((receiveMessage = client.Read()) != null)
+                while ((packet = client.Read()) != null)
                 {
-                    string serverMessage = GetReturnMessage(receiveMessage);
-
-                    if (receiveMessage == "end")
+                    switch (packet.mPacketType)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        client.Send(GetReturnMessage(receiveMessage));
+                        case PacketType.chatMessage:
+                            ChatMessagePacket chatMessagePacket = (ChatMessagePacket)packet;
+                            client.Send(packet);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
