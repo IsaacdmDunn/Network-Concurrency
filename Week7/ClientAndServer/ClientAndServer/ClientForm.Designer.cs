@@ -81,7 +81,7 @@ namespace ClientAndServer
             this.DisconnectBtn.TabIndex = 3;
             this.DisconnectBtn.Text = "Disconnect";
             this.DisconnectBtn.UseVisualStyleBackColor = true;
-            this.DisconnectBtn.Click += new System.EventHandler(this.button1_Click);
+            this.DisconnectBtn.Click += new System.EventHandler(this.DisconnectButtonClick);
             // 
             // UsernameInput
             // 

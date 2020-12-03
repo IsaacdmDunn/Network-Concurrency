@@ -20,6 +20,7 @@ namespace Server
         BinaryReader reader;
         BinaryWriter writer;
         BinaryFormatter formatter;
+        bool isConnected = false;
 
         public Client()
         {
@@ -31,9 +32,7 @@ namespace Server
             try
             {
                 tcpClient.Connect(ipAddreess, port);
-                stream =  tcpClient.GetStream();
-
-                //Socket socket;
+                isConnected = true;
                 stream = tcpClient.GetStream(); 
                 writer = new BinaryWriter(stream, Encoding.UTF8);
                 reader = new BinaryReader(stream, Encoding.UTF8);
@@ -53,37 +52,30 @@ namespace Server
             mClientForm = new ClientForm(this);
             
             Thread threads = new Thread(ProcessServerResponse);
-            
             threads.Start();
             mClientForm.ShowDialog();
 
-            //Console.WriteLine("Enter data");
+        }
 
-            //while ((userInput = Console.ReadLine()) != null)
-            //{
-            //    writer.WriteLine(userInput);
-            //    writer.Flush();
-
-            //    ProcessServerResponse();
-
-            //    if (userInput == "end")
-            //    {
-            //        break;
-            //    }
-
-            //}
-            
+        public void Disconnect(string username)
+        {
+            DisconnectMessagePacket disconnectPacket = new DisconnectMessagePacket(username);
+            MemoryStream msgStream = new MemoryStream();
+            formatter.Serialize(msgStream, disconnectPacket);
+            byte[] buffer = msgStream.GetBuffer();
+            writer.Write(buffer.Length);
+            writer.Write(buffer);
+            writer.Flush();
+            isConnected = false;
         }
 
         private void ProcessServerResponse()
         {
-            //SendMessage("hello", "server");
             int numberOfBytes;
-            while (true)
+            while (isConnected == true)
             {
                 if ((numberOfBytes = reader.ReadInt32()) != 0)
                 {
-
                     byte[] buffer = reader.ReadBytes(numberOfBytes);
                     MemoryStream _stream = new MemoryStream(buffer);
                     Packet recievedPackage = formatter.Deserialize(_stream) as Packet;
@@ -92,7 +84,12 @@ namespace Server
                     {
                         case PacketType.chatMessage:
                             ChatMessagePacket chatPacket = (ChatMessagePacket)recievedPackage;
-                            mClientForm.UpdateChatWindow(chatPacket.mMessage);
+                            mClientForm.UpdateChatWindow(chatPacket.mSender + ": " + chatPacket.mMessage);
+                            break;
+                        case PacketType.disconnectMessage:
+                            DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)recievedPackage;
+                            
+                            mClientForm.UpdateChatWindow(disconnectPacket.mSender + ": has disconnected.");
                             break;
 
                     }
@@ -104,7 +101,7 @@ namespace Server
             tcpClient.Close();
         }
 
-        public void SendMessage(string message, string username)
+        public void SendChatMessage(string message, string username)
         {
             ChatMessagePacket messagePacket = new ChatMessagePacket(username, message);
             MemoryStream msgStream = new MemoryStream();
@@ -114,6 +111,7 @@ namespace Server
             writer.Write(buffer);
             writer.Flush();
         }
+
     }
 }
 

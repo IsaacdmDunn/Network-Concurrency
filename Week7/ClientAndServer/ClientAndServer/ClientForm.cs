@@ -36,7 +36,7 @@ namespace ClientAndServer
 
         private void SubmitButtonClick(object sender, EventArgs e)
         {
-            mClient.SendMessage(InputField.Text, UsernameInput.Text);
+            mClient.SendChatMessage(InputField.Text, UsernameInput.Text);
             InputField.Clear();
         }
 
@@ -48,12 +48,14 @@ namespace ClientAndServer
 
         private void MessageWindow_TextChanged(object sender, EventArgs e)
         {
-
+            
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void DisconnectButtonClick(object sender, EventArgs e)
         {
-
+            mClient.Disconnect(UsernameInput.Text);
+            Submit.Enabled = false;
+            DisconnectBtn.Enabled = false;
         }
 
         private void label1_Click(object sender, EventArgs e)

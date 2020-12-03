@@ -54,7 +54,6 @@ namespace Server
         private void ClientMethod(Client client)
         {
             Packet packet;
-            //client.Send("hi");
             
             try
             {
@@ -64,7 +63,17 @@ namespace Server
                     {
                         case PacketType.chatMessage:
                             ChatMessagePacket chatMessagePacket = (ChatMessagePacket)packet;
-                            client.Send(packet);
+                            foreach (Client onlineClient in clients)
+                            {
+                                onlineClient.Send(packet);
+                            }
+                            break;
+                        case PacketType.disconnectMessage:
+                            DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)packet;
+                            foreach (Client onlineClient in clients)
+                            {
+                                onlineClient.Send(packet);
+                            }
                             break;
                         default:
                             break;
