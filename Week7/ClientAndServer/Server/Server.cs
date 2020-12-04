@@ -97,14 +97,5 @@ namespace Server
             }
 
         }
-
-        private string GetReturnMessage(string code)
-        {
-            if (code == "hi")
-            {
-                return "hello";
-            }
-            return code;
-        }
     }
 }
