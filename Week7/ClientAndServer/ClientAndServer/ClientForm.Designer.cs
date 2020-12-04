@@ -38,6 +38,7 @@ namespace ClientAndServer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.MessageWindow = new System.Windows.Forms.TextBox();
             this.InputField = new System.Windows.Forms.TextBox();
             this.Submit = new System.Windows.Forms.Button();
@@ -45,11 +46,15 @@ namespace ClientAndServer
             this.UsernameInput = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.OnlineList = new System.Windows.Forms.TextBox();
+            this.OnlineCounter = new System.Windows.Forms.Label();
+            this.UpdateTimer = new System.Windows.Forms.Timer(this.components);
+            this.ActivityTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // MessageWindow
             // 
-            this.MessageWindow.Location = new System.Drawing.Point(13, 13);
+            this.MessageWindow.Location = new System.Drawing.Point(16, 12);
             this.MessageWindow.Multiline = true;
             this.MessageWindow.Name = "MessageWindow";
             this.MessageWindow.Size = new System.Drawing.Size(775, 354);
@@ -60,12 +65,12 @@ namespace ClientAndServer
             // 
             this.InputField.Location = new System.Drawing.Point(95, 384);
             this.InputField.Name = "InputField";
-            this.InputField.Size = new System.Drawing.Size(613, 20);
+            this.InputField.Size = new System.Drawing.Size(616, 20);
             this.InputField.TabIndex = 1;
             // 
             // Submit
             // 
-            this.Submit.Location = new System.Drawing.Point(714, 384);
+            this.Submit.Location = new System.Drawing.Point(717, 384);
             this.Submit.Name = "Submit";
             this.Submit.Size = new System.Drawing.Size(74, 23);
             this.Submit.TabIndex = 2;
@@ -75,7 +80,7 @@ namespace ClientAndServer
             // 
             // DisconnectBtn
             // 
-            this.DisconnectBtn.Location = new System.Drawing.Point(713, 415);
+            this.DisconnectBtn.Location = new System.Drawing.Point(717, 415);
             this.DisconnectBtn.Name = "DisconnectBtn";
             this.DisconnectBtn.Size = new System.Drawing.Size(75, 23);
             this.DisconnectBtn.TabIndex = 3;
@@ -109,11 +114,39 @@ namespace ClientAndServer
             this.label2.TabIndex = 6;
             this.label2.Text = "Username";
             // 
+            // OnlineList
+            // 
+            this.OnlineList.Location = new System.Drawing.Point(805, 29);
+            this.OnlineList.Multiline = true;
+            this.OnlineList.Name = "OnlineList";
+            this.OnlineList.Size = new System.Drawing.Size(182, 409);
+            this.OnlineList.TabIndex = 7;
+            // 
+            // OnlineCounter
+            // 
+            this.OnlineCounter.AutoSize = true;
+            this.OnlineCounter.Location = new System.Drawing.Point(805, 13);
+            this.OnlineCounter.Name = "OnlineCounter";
+            this.OnlineCounter.Size = new System.Drawing.Size(49, 13);
+            this.OnlineCounter.TabIndex = 8;
+            this.OnlineCounter.Text = "Online: 0";
+            // 
+            // UpdateTimer
+            // 
+            this.UpdateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
+            // 
+            // ActivityTimer
+            // 
+            this.ActivityTimer.Interval = 1200000;
+            this.ActivityTimer.Tick += new System.EventHandler(this.ActivityTimer_Tick);
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(999, 450);
+            this.Controls.Add(this.OnlineCounter);
+            this.Controls.Add(this.OnlineList);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.UsernameInput);
@@ -123,6 +156,7 @@ namespace ClientAndServer
             this.Controls.Add(this.MessageWindow);
             this.Name = "ClientForm";
             this.Text = "Chat";
+            this.Load += new System.EventHandler(this.ClientForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -137,5 +171,9 @@ namespace ClientAndServer
         private System.Windows.Forms.TextBox UsernameInput;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox OnlineList;
+        private System.Windows.Forms.Label OnlineCounter;
+        private System.Windows.Forms.Timer UpdateTimer;
+        private System.Windows.Forms.Timer ActivityTimer;
     }
 }

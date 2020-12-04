@@ -20,7 +20,6 @@ namespace Server
 
         TcpListener tcpListener;
 
-
         public Server(string IPaddress, int port)
         {
             IPAddress localAddr = IPAddress.Parse(IPaddress);

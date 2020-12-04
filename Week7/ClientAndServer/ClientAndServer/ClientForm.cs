@@ -15,6 +15,7 @@ namespace ClientAndServer
     {
 
         private Client mClient;
+        bool isConnected = true;
 
         public void UpdateChatWindow(string message)
         {
@@ -61,6 +62,32 @@ namespace ClientAndServer
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void UpdateTimer_Tick(object sender, EventArgs e)
+        {
+            //mClient.SendChatMessage(InputField.Text, UsernameInput.Text);
+            //InputField.Clear();
+        }
+
+        private void ClientForm_Load(object sender, EventArgs e)
+        {
+            
+            ActivityTimer.Tick += new System.EventHandler(ActivityTimer_Tick);
+            ActivityTimer.Start();
+            
+        }
+
+        private void ActivityTimer_Tick(object sender, EventArgs e)
+        {
+            if (isConnected == true)
+            {
+                mClient.Disconnect(UsernameInput.Text);
+                Submit.Enabled = false;
+                DisconnectBtn.Enabled = false;
+                isConnected = false;
+            }
+            
         }
     }
 }
