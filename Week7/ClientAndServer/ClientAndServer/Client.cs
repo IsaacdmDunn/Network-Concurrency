@@ -32,12 +32,11 @@ namespace Server
             try
             {
                 tcpClient.Connect(ipAddreess, port);
-                isConnected = true;
                 stream = tcpClient.GetStream(); 
                 writer = new BinaryWriter(stream, Encoding.UTF8);
                 reader = new BinaryReader(stream, Encoding.UTF8);
                 formatter = new BinaryFormatter();
-
+                SendConnectMessage();
                 return true;
             }
             catch (Exception e)
@@ -55,6 +54,18 @@ namespace Server
             threads.Start();
             mClientForm.ShowDialog();
 
+        }
+
+        public void SendConnectMessage()
+        {
+            ConnectMessagePacket connectPacket = new ConnectMessagePacket("user");
+            MemoryStream msgStream = new MemoryStream();
+            formatter.Serialize(msgStream, connectPacket);
+            byte[] buffer = msgStream.GetBuffer();
+            writer.Write(buffer.Length);
+            writer.Write(buffer);
+            writer.Flush();
+            isConnected = true;
         }
 
         public void Disconnect(string username)
@@ -88,10 +99,12 @@ namespace Server
                             break;
                         case PacketType.disconnectMessage:
                             DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)recievedPackage;
-                            
                             mClientForm.UpdateChatWindow(disconnectPacket.mSender + ": has disconnected.");
                             break;
-
+                        case PacketType.connectMessage:
+                            ConnectMessagePacket connectPacket = (ConnectMessagePacket)recievedPackage;
+                            mClientForm.UpdateChatWindow(connectPacket.mSender + ": has connected.");
+                            break;
                     }
                 }
             }

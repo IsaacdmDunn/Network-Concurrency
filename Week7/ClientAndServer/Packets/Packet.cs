@@ -6,7 +6,8 @@ namespace Packets
     {
         chatMessage,
         privateMessage,
-        disconnectMessage,        
+        disconnectMessage,      
+        connectMessage,
         empty
     }
 
@@ -47,6 +48,18 @@ namespace Packets
         {
             mSender = sender;
             mPacketType = PacketType.disconnectMessage;
+        }
+    }
+
+    [Serializable]
+    public class ConnectMessagePacket : Packet
+    {
+        public string mSender;
+
+        public ConnectMessagePacket(string sender)
+        {
+            mSender = sender;
+            mPacketType = PacketType.connectMessage;
         }
     }
 }

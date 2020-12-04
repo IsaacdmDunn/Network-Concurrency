@@ -75,6 +75,13 @@ namespace Server
                                 onlineClient.Send(packet);
                             }
                             break;
+                        case PacketType.connectMessage:
+                            ConnectMessagePacket connectMessage = (ConnectMessagePacket)packet;
+                            foreach (Client onlineClient in clients)
+                            {
+                                onlineClient.Send(packet);
+                            }
+                            break;
                         default:
                             break;
                     }
