@@ -14,9 +14,9 @@ namespace MonoGameClient
         [STAThread]
         static void Main()
         {
-            Client client = new Client();
-            client.Connect("127.0.0.1", 4444);
-            client.Run();
+            //Client client = new Client();
+            //client.Connect("127.0.0.1", 4444);
+            //client.Run();
             using (var game = new Game1())
                 game.Run();
         }

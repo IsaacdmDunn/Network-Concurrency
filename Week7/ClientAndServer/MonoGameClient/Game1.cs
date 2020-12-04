@@ -71,24 +71,15 @@ namespace MonoGameClient
                 Exit();
 
             // TODO: Add your update logic here
-            position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (position.X <= 0 && velocity.X < 0)
-            {
-                velocity.X *= -1;
-            }
-            else if (position.Y <= 0 && velocity.Y < 0)
-            {
-                velocity.Y *= -1;
-            }
-            else if (position.Y >= 800 - targetY && velocity.Y > 0)
-            {
-                velocity.Y *= -1;
-            }
-            else if (position.X >= 800 - targetX && velocity.X > 0)
-            {
-                velocity.X *= -1;
-            }
+            KeyboardState state = Keyboard.GetState();
+            if (state.IsKeyDown(Keys.Right))
+                position.X += 10;
+            if (state.IsKeyDown(Keys.Left))
+                position.X -= 10;
+            if (state.IsKeyDown(Keys.Up))
+                position.Y -= 10;
+            if (state.IsKeyDown(Keys.Down))
+                position.Y += 10;
             base.Update(gameTime);
         }
 
