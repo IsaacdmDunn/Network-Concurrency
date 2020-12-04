@@ -39,6 +39,9 @@ namespace ClientAndServer
         {
             mClient.SendChatMessage(InputField.Text, UsernameInput.Text);
             InputField.Clear();
+            //reset activity timer
+            ActivityTimer.Stop();
+            ActivityTimer.Start();
         }
 
         public ClientForm(Client client)
@@ -57,6 +60,7 @@ namespace ClientAndServer
             mClient.Disconnect(UsernameInput.Text);
             Submit.Enabled = false;
             DisconnectBtn.Enabled = false;
+            
         }
 
         private void label1_Click(object sender, EventArgs e)

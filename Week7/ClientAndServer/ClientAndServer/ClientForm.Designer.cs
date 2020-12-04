@@ -137,7 +137,7 @@ namespace ClientAndServer
             // 
             // ActivityTimer
             // 
-            this.ActivityTimer.Interval = 1200000;
+            this.ActivityTimer.Interval = 6000;
             this.ActivityTimer.Tick += new System.EventHandler(this.ActivityTimer_Tick);
             // 
             // ClientForm
