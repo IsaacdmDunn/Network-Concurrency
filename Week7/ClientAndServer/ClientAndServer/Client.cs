@@ -105,6 +105,12 @@ namespace Server
                             ConnectMessagePacket connectPacket = (ConnectMessagePacket)recievedPackage;
                             mClientForm.UpdateChatWindow(connectPacket.mSender + ": has connected.");
                             break;
+                        case PacketType.privateMessage:
+                            PrivateMessagePacket privateMessagePacket = (PrivateMessagePacket)recievedPackage;
+                            privateMessagePacket.mReceiver = 1;
+                            mClientForm.UpdateChatWindow(privateMessagePacket.mSender + /*"(" + "id here" + ")" + */ " Wispers: " + privateMessagePacket.mMessage);
+                        break;
+
                     }
                 }
             }
@@ -117,6 +123,17 @@ namespace Server
         public void SendChatMessage(string message, string username)
         {
             ChatMessagePacket messagePacket = new ChatMessagePacket(username, message);
+            MemoryStream msgStream = new MemoryStream();
+            formatter.Serialize(msgStream, messagePacket);
+            byte[] buffer = msgStream.GetBuffer();
+            writer.Write(buffer.Length);
+            writer.Write(buffer);
+            writer.Flush();
+        }
+
+        public void SendPrivateMessage(string message, string username, int receiver)
+        {
+            PrivateMessagePacket messagePacket = new PrivateMessagePacket(username, message, receiver);
             MemoryStream msgStream = new MemoryStream();
             formatter.Serialize(msgStream, messagePacket);
             byte[] buffer = msgStream.GetBuffer();

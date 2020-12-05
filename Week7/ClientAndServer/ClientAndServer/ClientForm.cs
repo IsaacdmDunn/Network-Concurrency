@@ -16,6 +16,7 @@ namespace ClientAndServer
 
         private Client mClient;
         bool isConnected = true;
+        int sendToOption;
 
         public void UpdateChatWindow(string message)
         {
@@ -28,8 +29,10 @@ namespace ClientAndServer
             }
             else
             {
+                
                 MessageWindow.Text += message + Environment.NewLine;
                 MessageWindow.SelectionStart = MessageWindow.Text.Length;
+                MessageWindow.SelectionColor = Color.Red;
                 MessageWindow.ScrollToCaret();
             }
         }
@@ -37,7 +40,17 @@ namespace ClientAndServer
 
         private void SubmitButtonClick(object sender, EventArgs e)
         {
-            mClient.SendChatMessage(InputField.Text, UsernameInput.Text);
+            if (privateMessageBox.SelectedIndex == 0)
+            {
+                MessageWindow.SelectionColor = Color.Black;
+                mClient.SendChatMessage(InputField.Text, UsernameInput.Text);
+            }
+            else
+            {
+                
+                mClient.SendPrivateMessage(InputField.Text, UsernameInput.Text, privateMessageBox.SelectedIndex - 1);
+            }
+            
             InputField.Clear();
             //reset activity timer
             ActivityTimer.Stop();
@@ -79,6 +92,8 @@ namespace ClientAndServer
             
             ActivityTimer.Tick += new System.EventHandler(ActivityTimer_Tick);
             ActivityTimer.Start();
+
+            privateMessageBox.SelectedIndex = 0;
             
         }
 
@@ -92,6 +107,16 @@ namespace ClientAndServer
                 isConnected = false;
             }
             
+        }
+
+        private void SendTo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void privateMessageBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -40,6 +40,22 @@ namespace Packets
     }
 
     [Serializable]
+    public class PrivateMessagePacket : Packet
+    {
+        public string mMessage;
+        public string mSender;
+        public int mReceiver;
+
+        public PrivateMessagePacket(string sender, string message, int receiver)
+        {
+            mMessage = message;
+            mSender = sender;
+            mReceiver = receiver;
+            mPacketType = PacketType.privateMessage;
+        }
+    }
+
+    [Serializable]
     public class DisconnectMessagePacket : Packet
     {
         public string mSender;

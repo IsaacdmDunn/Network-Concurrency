@@ -49,6 +49,7 @@ namespace Server
                 if (numberOfBytes != -1)
                 {
                     byte[] buffer = reader.ReadBytes(numberOfBytes);
+
                     MemoryStream stream = new MemoryStream(buffer);
                     return formatter.Deserialize(stream) as Packet;
                 }

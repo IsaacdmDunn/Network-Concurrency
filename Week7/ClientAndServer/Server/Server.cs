@@ -81,6 +81,16 @@ namespace Server
                                 onlineClient.Send(packet);
                             }
                             break;
+                        case PacketType.privateMessage:
+                            PrivateMessagePacket privateMessage = (PrivateMessagePacket)packet;
+                            for (int i = 0; i < clients.Count(); i++)
+                            {
+                                if (i == privateMessage.mReceiver)
+                                {
+                                    clients.ElementAt(privateMessage.mReceiver).Send(packet);
+                                }
+                            }
+                            break;
                         default:
                             break;
                     }

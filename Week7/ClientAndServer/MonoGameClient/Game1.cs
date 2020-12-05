@@ -72,13 +72,13 @@ namespace MonoGameClient
 
             // TODO: Add your update logic here
             KeyboardState state = Keyboard.GetState();
-            if (state.IsKeyDown(Keys.Right))
+            if (state.IsKeyDown(Keys.D))
                 position.X += 10;
-            if (state.IsKeyDown(Keys.Left))
+            if (state.IsKeyDown(Keys.A))
                 position.X -= 10;
-            if (state.IsKeyDown(Keys.Up))
+            if (state.IsKeyDown(Keys.W))
                 position.Y -= 10;
-            if (state.IsKeyDown(Keys.Down))
+            if (state.IsKeyDown(Keys.S))
                 position.Y += 10;
             base.Update(gameTime);
         }
