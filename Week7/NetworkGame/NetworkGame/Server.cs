@@ -26,11 +26,11 @@ namespace Server
             IPAddress localAddr = IPAddress.Parse(IPaddress);
             tcpListener = new TcpListener(localAddr, port);
         }
-        
+
         //starts server
         public void Start()
-        {   
-            
+        {
+
             clients = new ConcurrentBag<Client>();
             Socket socket;
             tcpListener.Start();
@@ -51,7 +51,7 @@ namespace Server
                 thread.Start();
             }
 
-            
+
         }
 
         //stops the server
@@ -64,7 +64,7 @@ namespace Server
         private void ClientMethod(Client client)
         {
             Packet packet;
-            
+
             try
             {
                 //while client is reading data

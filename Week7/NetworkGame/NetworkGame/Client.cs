@@ -10,7 +10,6 @@ using Packets;
 
 namespace Server
 {
-    //server's client class
     public class Client
     {
         Socket socket;
@@ -21,7 +20,6 @@ namespace Server
         object readLock;
         object writeLock;
 
-        //constructor
         public Client(Socket _socket)
         {
             socket = _socket;
@@ -31,9 +29,9 @@ namespace Server
             formatter = new BinaryFormatter();
             readLock = new object();
             writeLock = new object();
+
         }
 
-        //closes data streams
         public void Close()
         {
             socket.Shutdown(SocketShutdown.Both);
@@ -43,7 +41,6 @@ namespace Server
             socket.Close();
         }
 
-        //reads data and deserializes data to create packet
         public Packet Read()
         {
             lock (readLock)
@@ -52,7 +49,6 @@ namespace Server
                 if (numberOfBytes != -1)
                 {
                     byte[] buffer = reader.ReadBytes(numberOfBytes);
-
                     MemoryStream stream = new MemoryStream(buffer);
                     return formatter.Deserialize(stream) as Packet;
                 }
@@ -63,7 +59,6 @@ namespace Server
             }
         }
 
-        //serializes data and sends it to client
         public void Send(Packet message)
         {
             lock (writeLock)
@@ -81,69 +76,3 @@ namespace Server
 
     }
 }
-
-
-
-
-
-
-
-//TcpClient tcpClient;
-//NetworkStream stream;
-//StreamWriter writer;
-//StreamReader reader;
-
-//public Client()
-//{
-//    tcpClient = new TcpClient();
-//}
-
-//public bool Connect(string ipAddreess, int port)
-//{
-//    try
-//    {
-//        tcpClient.Connect(ipAddreess, port);
-//        tcpClient.GetStream();
-
-//        //Socket socket;
-//        stream = tcpClient.GetStream();
-//        writer = new StreamWriter(stream, Encoding.UTF8);
-//        reader = new StreamReader(stream, Encoding.UTF8);
-
-//        return true;
-//    }
-//    catch (Exception e)
-//    {
-//        Console.WriteLine("Exception: " + e.Message);
-//        return false;
-//    }
-//}
-
-//public void Run()
-//{
-//    string userInput;
-//    ProcessServerResponse();
-//    Console.WriteLine("Enter data");
-
-//    while ((userInput = Console.ReadLine()) != null)
-//    {
-//        writer.WriteLine(userInput);
-//        writer.Flush();
-
-//        ProcessServerResponse();
-
-//        if (userInput == "end")
-//        {
-//            break;
-//        }
-
-//        tcpClient.Close();
-//    }
-//}
-
-//private void ProcessServerResponse()
-//{
-//    Console.WriteLine("Server says: " + reader.ReadLine());
-//    Console.WriteLine();
-
-//}

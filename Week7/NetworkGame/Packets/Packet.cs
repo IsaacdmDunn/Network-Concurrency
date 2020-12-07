@@ -7,7 +7,7 @@ namespace Packets
     {
         chatMessage,
         privateMessage,
-        disconnectMessage,      
+        disconnectMessage,
         connectMessage,
         onlineData,
         empty

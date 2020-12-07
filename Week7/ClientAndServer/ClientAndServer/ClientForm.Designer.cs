@@ -51,7 +51,7 @@ namespace ClientAndServer
             this.ActivityTimer = new System.Windows.Forms.Timer(this.components);
             this.label3 = new System.Windows.Forms.Label();
             this.privateMessageBox = new System.Windows.Forms.ComboBox();
-            this.MessageWindow = new System.Windows.Forms.RichTextBox();
+            this.MessageWindow = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // InputField
@@ -96,7 +96,6 @@ namespace ClientAndServer
             this.label1.Size = new System.Drawing.Size(50, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = "Message";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -161,22 +160,20 @@ namespace ClientAndServer
             this.privateMessageBox.Name = "privateMessageBox";
             this.privateMessageBox.Size = new System.Drawing.Size(183, 21);
             this.privateMessageBox.TabIndex = 11;
-            this.privateMessageBox.SelectedIndexChanged += new System.EventHandler(this.privateMessageBox_SelectedIndexChanged);
             // 
             // MessageWindow
             // 
-            this.MessageWindow.Location = new System.Drawing.Point(16, 13);
+            this.MessageWindow.Location = new System.Drawing.Point(16, 12);
+            this.MessageWindow.Multiline = true;
             this.MessageWindow.Name = "MessageWindow";
-            this.MessageWindow.Size = new System.Drawing.Size(783, 337);
-            this.MessageWindow.TabIndex = 12;
-            this.MessageWindow.Text = "";
+            this.MessageWindow.Size = new System.Drawing.Size(775, 354);
+            this.MessageWindow.TabIndex = 0;
             // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1002, 450);
-            this.Controls.Add(this.MessageWindow);
             this.Controls.Add(this.privateMessageBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.OnlineCounter);
@@ -187,6 +184,7 @@ namespace ClientAndServer
             this.Controls.Add(this.DisconnectBtn);
             this.Controls.Add(this.Submit);
             this.Controls.Add(this.InputField);
+            this.Controls.Add(this.MessageWindow);
             this.Name = "ClientForm";
             this.Text = "Chat";
             this.Load += new System.EventHandler(this.ClientForm_Load);
@@ -208,6 +206,6 @@ namespace ClientAndServer
         private System.Windows.Forms.Timer ActivityTimer;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox privateMessageBox;
-        private System.Windows.Forms.RichTextBox MessageWindow;
+        private System.Windows.Forms.TextBox MessageWindow;
     }
 }

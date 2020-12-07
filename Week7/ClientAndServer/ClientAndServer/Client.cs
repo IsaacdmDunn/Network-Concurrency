@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Server
 {
+    //client class
     public class Client
     {
         ClientForm mClientForm;
@@ -22,23 +23,29 @@ namespace Server
         BinaryFormatter formatter;
         bool isConnected = false;
 
+        //constructor
         public Client()
         {
             tcpClient = new TcpClient();
         }
 
+        //connects to server
         public bool Connect(string ipAddreess, int port)
         {
             try
             {
+                //connects to server
                 tcpClient.Connect(ipAddreess, port);
                 stream = tcpClient.GetStream(); 
                 writer = new BinaryWriter(stream, Encoding.UTF8);
                 reader = new BinaryReader(stream, Encoding.UTF8);
                 formatter = new BinaryFormatter();
+
+                //send connect message
                 SendConnectMessage();
                 return true;
             }
+            //if client fails to connect
             catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
@@ -46,16 +53,19 @@ namespace Server
             }
         }
 
+        //starts client
         public void Run()
         {
             mClientForm = new ClientForm(this);
             
+            //sets up new thread
             Thread threads = new Thread(ProcessServerResponse);
             threads.Start();
             mClientForm.ShowDialog();
 
         }
 
+        //sends connect message
         public void SendConnectMessage()
         {
             ConnectMessagePacket connectPacket = new ConnectMessagePacket("user");
@@ -68,6 +78,7 @@ namespace Server
             isConnected = true;
         }
 
+        //sends diconnect message
         public void Disconnect(string username)
         {
             DisconnectMessagePacket disconnectPacket = new DisconnectMessagePacket(username);
@@ -80,36 +91,47 @@ namespace Server
             isConnected = false;
         }
 
+        //processes server responce
         private void ProcessServerResponse()
         {
             int numberOfBytes;
+            //if connected to server
             while (isConnected == true)
             {
+                //read data from server and deserialize
                 if ((numberOfBytes = reader.ReadInt32()) != 0)
                 {
                     byte[] buffer = reader.ReadBytes(numberOfBytes);
                     MemoryStream _stream = new MemoryStream(buffer);
                     Packet recievedPackage = formatter.Deserialize(_stream) as Packet;
 
+                    //if packet type is...
                     switch (recievedPackage.mPacketType)
                     {
+                        //send message to all
                         case PacketType.chatMessage:
                             ChatMessagePacket chatPacket = (ChatMessagePacket)recievedPackage;
                             mClientForm.UpdateChatWindow(chatPacket.mSender + ": " + chatPacket.mMessage);
                             break;
+                        //send disconnect message to all
                         case PacketType.disconnectMessage:
                             DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)recievedPackage;
                             mClientForm.UpdateChatWindow(disconnectPacket.mSender + ": has disconnected.");
                             break;
+                        //send connect message to all
                         case PacketType.connectMessage:
                             ConnectMessagePacket connectPacket = (ConnectMessagePacket)recievedPackage;
                             mClientForm.UpdateChatWindow(connectPacket.mSender + ": has connected.");
                             break;
+                        //send private message to user
                         case PacketType.privateMessage:
                             PrivateMessagePacket privateMessagePacket = (PrivateMessagePacket)recievedPackage;
-                            privateMessagePacket.mReceiver = 1;
-                            mClientForm.UpdateChatWindow(privateMessagePacket.mSender + /*"(" + "id here" + ")" + */ " Wispers: " + privateMessagePacket.mMessage);
-                        break;
+                            mClientForm.UpdateChatWindow(privateMessagePacket.mSender + "(" + privateMessagePacket.mReceiver + ")" + " Wispers: " + privateMessagePacket.mMessage);
+                            break;
+                        case PacketType.onlineData:
+                            OnlineDataPacket onlineDataPacket = (OnlineDataPacket)recievedPackage;
+                            mClientForm.UpdateOnlineCounter(onlineDataPacket.mOnlineCount);
+                            break;
 
                     }
                 }

@@ -9,6 +9,7 @@ namespace ClientAndServer
 {
     class Program
     {
+        //sets ups clienton start up
         static void Main(string[] args)
         {
             Client client = new Client();
