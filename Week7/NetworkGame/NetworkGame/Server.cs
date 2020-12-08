@@ -72,50 +72,15 @@ namespace Server
                 {
                     switch (packet.mPacketType)
                     {
-                        //send message to everyone
-                        case PacketType.chatMessage:
-                            ChatMessagePacket chatMessagePacket = (ChatMessagePacket)packet;
+                        //send position to everyone
+                        case PacketType.positionData:
+                            PositionPacket positionDataPacket = (PositionPacket)packet;
                             foreach (Client onlineClient in clients)
                             {
                                 onlineClient.Send(packet);
                             }
                             break;
-                        //send disconnect message to everyone
-                        case PacketType.disconnectMessage:
-                            DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)packet;
-                            foreach (Client onlineClient in clients)
-                            {
-                                onlineClient.Send(packet);
-                            }
-                            break;
-                        //send connect message
-                        case PacketType.connectMessage:
-                            ConnectMessagePacket connectMessage = (ConnectMessagePacket)packet;
-                            foreach (Client onlineClient in clients)
-                            {
-                                onlineClient.Send(packet);
-                            }
-                            break;
-                        //send private message to one user
-                        case PacketType.privateMessage:
-                            PrivateMessagePacket privateMessage = (PrivateMessagePacket)packet;
-                            for (int i = 0; i < clients.Count(); i++)
-                            {
-                                if (i == privateMessage.mReceiver)
-                                {
-                                    clients.ElementAt(privateMessage.mReceiver).Send(packet);
-                                }
-                            }
-                            break;
-                        case PacketType.onlineData:
-                            OnlineDataPacket onlineData = (OnlineDataPacket)packet;
-                            foreach (Client onlineClient in clients)
-                            {
-                                onlineClient.Send(packet);
-                            }
-                            break;
-                        default:
-                            break;
+                        
                     }
                 }
             }

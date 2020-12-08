@@ -10,6 +10,7 @@ namespace Packets
         disconnectMessage,      
         connectMessage,
         onlineData,
+        positionData,
         empty
     }
 
@@ -41,6 +42,8 @@ namespace Packets
             mPacketType = PacketType.chatMessage;
         }
     }
+
+    
 
     //private message packet require sender(username), message to be sent and id for recipient
     [Serializable]

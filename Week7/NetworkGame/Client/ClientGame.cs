@@ -16,16 +16,15 @@ namespace GameClient
     /// </summary>
     public class ClientGame : Game
     {
-        //ClientForm mClientForm;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D player;
-        float targetX = 128;
-        float targetY;
-        Vector2 scale;
-        Vector2 velocity = new Vector2(100, 100);
-        Vector2 position = new Vector2(0, 0);
-        
+        Player[] player;
+        public Texture2D playerTex;
+        public Vector2 scale;
+
+        public float targetX = 128;
+        public float targetY;
+
         TcpClient tcpClient;
         NetworkStream stream;
         BinaryReader reader;
@@ -35,9 +34,23 @@ namespace GameClient
 
         public ClientGame()
         {
+
+            
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            //set up tcp client and connect to server
             tcpClient = new TcpClient();
+            Connect("127.0.0.1", 4444);
+            RunClient();
+
+            //initialise players
+            player = new Player[5];
+            for (int i = 0; i < 5; i++)
+            {
+                player[i] = new Player();
+            }
+
         }
 
         //connects to server
@@ -69,7 +82,6 @@ namespace GameClient
             //sets up new thread
             Thread threads = new Thread(ProcessServerResponse);
             threads.Start();
-            //mClientForm.ShowDialog();
 
         }
 
@@ -78,7 +90,7 @@ namespace GameClient
         {
             int numberOfBytes;
             //if connected to server
-            while (isConnected == true)
+            while (true)
             {
                 //read data from server and deserialize
                 if ((numberOfBytes = reader.ReadInt32()) != 0)
@@ -90,7 +102,12 @@ namespace GameClient
                     //if packet type is...
                     switch (recievedPackage.mPacketType)
                     {
-
+                        //position data is set to player object
+                        case PacketType.positionData:
+                            PositionPacket positionDataPacket = (PositionPacket)recievedPackage;
+                            player[1].position.X = positionDataPacket.mPosX;
+                            player[1].position.Y = positionDataPacket.mPosY;
+                            break;
                     }
                 }
             }
@@ -98,6 +115,18 @@ namespace GameClient
             reader.Close();
             writer.Close();
             tcpClient.Close();
+        }
+
+        //serialize position data and send to server
+        public void SendPosition()
+        {
+            PositionPacket positionDataPacket = new PositionPacket(player[0].position.X, player[0].position.Y);
+            MemoryStream msgStream = new MemoryStream();
+            formatter.Serialize(msgStream, positionDataPacket);
+            byte[] buffer = msgStream.GetBuffer();
+            writer.Write(buffer.Length);
+            writer.Write(buffer);
+            writer.Flush();
         }
 
         /// <summary>
@@ -108,7 +137,6 @@ namespace GameClient
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
 
             base.Initialize();
         }
@@ -121,11 +149,11 @@ namespace GameClient
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player = Content.Load<Texture2D>("Player");
-            scale = new Vector2(targetX / (float)player.Width, targetX / (float)player.Width);
-            targetY = player.Height * scale.Y;
 
-            // TODO: use this.Content to load your game content here
+            //load player sprite and set up scale and target
+            playerTex = Content.Load<Texture2D>("Player");
+            scale = new Vector2(targetX / (float)playerTex.Width, targetX / (float)playerTex.Width);
+            targetY = playerTex.Height * scale.Y;
         }
 
         /// <summary>
@@ -144,20 +172,23 @@ namespace GameClient
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //exit game
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            //move player
             KeyboardState state = Keyboard.GetState();
             if (state.IsKeyDown(Keys.D))
-                position.X += 10;
+                player[0].position.X += 10;
             if (state.IsKeyDown(Keys.A))
-                position.X -= 10;
+                player[0].position.X -= 10;
             if (state.IsKeyDown(Keys.W))
-                position.Y -= 10;
+                player[0].position.Y -= 10;
             if (state.IsKeyDown(Keys.S))
-                position.Y += 10;
+                player[0].position.Y += 10;
 
+            //serialize position as packet and send to server
+            SendPosition();
             base.Update(gameTime);
         }
 
@@ -167,15 +198,34 @@ namespace GameClient
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.BlueViolet);
+            GraphicsDevice.Clear(Color.Maroon);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            spriteBatch.Draw(player, position: position, scale: scale);
+            //draw players
+            for (int i = 0; i < 5; i++)
+            {
+                spriteBatch.Draw(playerTex, position: player[i].position, scale: scale);
+                
+            }
 
             spriteBatch.End();
             base.Draw(gameTime);
         }
+    }
+
+    //player class
+    public class Player
+    {
+        public Vector2 velocity;
+        public Vector2 position;
+
+        public Player()
+        {
+            velocity = new Vector2(100, 100);
+            position = new Vector2(0, 0);
+        }
+
     }
 }

@@ -16,7 +16,8 @@ namespace Client
         static void Main()
         {
             using (var game = new ClientGame())
-                game.Run();
+            
+            game.Run();
         }
     }
 #endif

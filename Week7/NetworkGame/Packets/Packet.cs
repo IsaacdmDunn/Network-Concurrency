@@ -10,6 +10,7 @@ namespace Packets
         disconnectMessage,
         connectMessage,
         onlineData,
+        positionData,
         empty
     }
 
@@ -25,6 +26,21 @@ namespace Packets
         }
 
 
+    }
+
+    //positon data for players
+    [Serializable]
+    public class PositionPacket : Packet
+    {
+        public float mPosX;
+        public float mPosY;
+
+        public PositionPacket(float posX, float posY)
+        {
+            mPosX = posX;
+            mPosY = posY;
+            mPacketType = PacketType.positionData;
+        }
     }
 
     //chat message packet for messages sent to all clients takes values for sender(username) and message user sent
