@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
 
 namespace Packets
 {
+
+    
     //enum stores all types of packets that can be sent
     public enum PacketType
     {
@@ -11,6 +14,7 @@ namespace Packets
         connectMessage,
         onlineData,
         positionData,
+        login,
         empty
     }
 
@@ -111,6 +115,19 @@ namespace Packets
         {
             mOnlineCount = onlineCount;
             mPacketType = PacketType.onlineData;
+        }
+    }
+
+    //sends login packet to th server
+    [Serializable]
+    public class LoginPacket : Packet
+    {
+        public IPEndPoint mEndPoint;
+
+        public LoginPacket(IPEndPoint endPoint)
+        {
+            mEndPoint = endPoint;
+            mPacketType = PacketType.login;
         }
     }
 }

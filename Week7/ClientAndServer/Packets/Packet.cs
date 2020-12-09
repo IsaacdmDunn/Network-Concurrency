@@ -10,7 +10,6 @@ namespace Packets
         disconnectMessage,      
         connectMessage,
         onlineData,
-        positionData,
         empty
     }
 

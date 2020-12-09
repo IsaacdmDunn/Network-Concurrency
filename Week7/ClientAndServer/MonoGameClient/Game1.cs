@@ -94,7 +94,7 @@ namespace MonoGameClient
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            spriteBatch.Draw(cat, position: position, scale: scale);
+            spriteBatch.Draw(cat, new Vector2(position.X, position.Y));
 
             spriteBatch.End();
             base.Draw(gameTime);

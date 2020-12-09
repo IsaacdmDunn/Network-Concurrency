@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -12,6 +13,7 @@ namespace Server
 {
     public class Client
     {
+        public IPEndPoint mEndPoint;
         Socket socket;
         NetworkStream stream;
         BinaryReader reader;
@@ -41,7 +43,7 @@ namespace Server
             socket.Close();
         }
 
-        public Packet Read()
+        public Packet TCPRead()
         {
             lock (readLock)
             {
@@ -59,7 +61,7 @@ namespace Server
             }
         }
 
-        public void Send(Packet message)
+        public void TCPSend(Packet message)
         {
             lock (writeLock)
             {
@@ -69,6 +71,20 @@ namespace Server
 
                 writer.Write(bufffer.Length);
                 writer.Write(bufffer);
+                writer.Flush();
+            }
+        }
+
+        public void UDPSend(Packet message)
+        {
+            lock (writeLock)
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                formatter.Serialize(memoryStream, message);
+                byte[] buffer = memoryStream.GetBuffer();
+
+                writer.Write(buffer.Length);
+                writer.Write(buffer);
                 writer.Flush();
             }
         }

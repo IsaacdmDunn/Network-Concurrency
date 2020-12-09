@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Server
     class Server
     {
         ConcurrentBag<Client> clients;
+        UdpClient udpListener;
         TcpListener tcpListener;
 
         //constructor
@@ -24,7 +26,50 @@ namespace Server
         {
             //sets up tcp listener
             IPAddress localAddr = IPAddress.Parse(IPaddress);
+            udpListener = new UdpClient(port);
             tcpListener = new TcpListener(localAddr, port);
+            Thread listen = new Thread(() => { UDPListen(); });
+            listen.Start();
+        }
+
+        private void UDPListen()
+        {
+            try
+            {
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+
+                while (true)
+                {
+                    byte[] buffer = udpListener.Receive(ref endPoint);
+                    MemoryStream stream = new MemoryStream(buffer);
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                    Packet packet = binaryFormatter.Deserialize(stream) as Packet;
+                    foreach (Client onlineClient in clients)
+                    {
+                        if (onlineClient.mEndPoint != null && endPoint.ToString() != onlineClient.mEndPoint.ToString())
+                        {
+                            switch (packet.mPacketType)
+                            {
+                                case PacketType.positionData:
+                                    //onlineClient.TCPSend(packet);
+                                    
+                                    MemoryStream memoryStream = new MemoryStream();
+                                    binaryFormatter.Serialize(memoryStream, packet);
+                                    buffer = memoryStream.GetBuffer();
+
+                                    udpListener.Send(buffer, buffer.Length, onlineClient.mEndPoint);
+                                    
+                                    break;
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("Client UDP Read Method Exception: " + e.Message);
+            }
         }
 
         //starts server
@@ -47,7 +92,7 @@ namespace Server
                 clients.Add(client);
 
                 //creates and starts new thread
-                Thread thread = new Thread(() => { ClientMethod(client); });
+                Thread thread = new Thread(() => { TCPClientMethod(client); });
                 thread.Start();
             }
 
@@ -61,23 +106,25 @@ namespace Server
         }
 
         //client method sends data from server program to client program
-        private void ClientMethod(Client client)
+        private void TCPClientMethod(Client client)
         {
             Packet packet;
 
             try
             {
                 //while client is reading data
-                while ((packet = client.Read()) != null)
+                while ((packet = client.TCPRead()) != null)
                 {
                     switch (packet.mPacketType)
                     {
-                        //send position to everyone
-                        case PacketType.positionData:
-                            PositionPacket positionDataPacket = (PositionPacket)packet;
+                        
+                        case PacketType.login:
+                            LoginPacket loginPacket = (LoginPacket)packet;
+                            client.mEndPoint = loginPacket.mEndPoint;
                             foreach (Client onlineClient in clients)
                             {
-                                onlineClient.Send(packet);
+                                
+                                onlineClient.TCPSend(packet);
                             }
                             break;
                         

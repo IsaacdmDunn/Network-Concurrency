@@ -103,33 +103,33 @@ namespace Server
                 {
                     byte[] buffer = reader.ReadBytes(numberOfBytes);
                     MemoryStream _stream = new MemoryStream(buffer);
-                    Packet recievedPackage = formatter.Deserialize(_stream) as Packet;
+                    Packet packet = formatter.Deserialize(_stream) as Packet;
 
                     //if packet type is...
-                    switch (recievedPackage.mPacketType)
+                    switch (packet.mPacketType)
                     {
                         //send message to all
                         case PacketType.chatMessage:
-                            ChatMessagePacket chatPacket = (ChatMessagePacket)recievedPackage;
+                            ChatMessagePacket chatPacket = (ChatMessagePacket)packet;
                             mClientForm.UpdateChatWindow(chatPacket.mSender + ": " + chatPacket.mMessage);
                             break;
                         //send disconnect message to all
                         case PacketType.disconnectMessage:
-                            DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)recievedPackage;
+                            DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)packet;
                             mClientForm.UpdateChatWindow(disconnectPacket.mSender + ": has disconnected.");
                             break;
                         //send connect message to all
                         case PacketType.connectMessage:
-                            ConnectMessagePacket connectPacket = (ConnectMessagePacket)recievedPackage;
+                            ConnectMessagePacket connectPacket = (ConnectMessagePacket)packet;
                             mClientForm.UpdateChatWindow(connectPacket.mSender + ": has connected.");
                             break;
                         //send private message to user
                         case PacketType.privateMessage:
-                            PrivateMessagePacket privateMessagePacket = (PrivateMessagePacket)recievedPackage;
+                            PrivateMessagePacket privateMessagePacket = (PrivateMessagePacket)packet;
                             mClientForm.UpdateChatWindow(privateMessagePacket.mSender + "(" + privateMessagePacket.mReceiver + ")" + " Wispers: " + privateMessagePacket.mMessage);
                             break;
                         case PacketType.onlineData:
-                            OnlineDataPacket onlineDataPacket = (OnlineDataPacket)recievedPackage;
+                            OnlineDataPacket onlineDataPacket = (OnlineDataPacket)packet;
                             mClientForm.UpdateOnlineCounter(onlineDataPacket.mOnlineCount);
                             break;
 

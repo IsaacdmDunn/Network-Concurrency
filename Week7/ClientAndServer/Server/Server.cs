@@ -16,7 +16,8 @@ namespace Server
     //server class
     class Server
     {
-        ConcurrentBag<Client> clients;
+        ConcurrentDictionary<int, Client> clients;
+        //ConcurrentBag<Client> clients;
         TcpListener tcpListener;
 
         //constructor
@@ -31,10 +32,10 @@ namespace Server
         public void Start()
         {   
             
-            clients = new ConcurrentBag<Client>();
+            clients = new ConcurrentDictionary<int, Client>();
             Socket socket;
             tcpListener.Start();
-
+            int clientIndex = 0;
             //searches for clients and adds then to the concurrent bag
             while (true)
             {
@@ -44,7 +45,8 @@ namespace Server
 
                 //adds client to concurrent bag
                 Client client = new Client(socket);
-                clients.Add(client);
+                clients.TryAdd(clientIndex, client);
+                clientIndex++;
 
                 //creates and starts new thread
                 Thread thread = new Thread(() => { ClientMethod(client); });
@@ -75,7 +77,7 @@ namespace Server
                         //send message to everyone
                         case PacketType.chatMessage:
                             ChatMessagePacket chatMessagePacket = (ChatMessagePacket)packet;
-                            foreach (Client onlineClient in clients)
+                            foreach (Client onlineClient in clients.Values)
                             {
                                 onlineClient.Send(packet);
                             }
@@ -83,7 +85,7 @@ namespace Server
                         //send disconnect message to everyone
                         case PacketType.disconnectMessage:
                             DisconnectMessagePacket disconnectPacket = (DisconnectMessagePacket)packet;
-                            foreach (Client onlineClient in clients)
+                            foreach (Client onlineClient in clients.Values)
                             {
                                 onlineClient.Send(packet);
                             }
@@ -91,7 +93,7 @@ namespace Server
                         //send connect message
                         case PacketType.connectMessage:
                             ConnectMessagePacket connectMessage = (ConnectMessagePacket)packet;
-                            foreach (Client onlineClient in clients)
+                            foreach (Client onlineClient in clients.Values)
                             {
                                 onlineClient.Send(packet);
                             }
@@ -103,13 +105,13 @@ namespace Server
                             {
                                 if (i == privateMessage.mReceiver)
                                 {
-                                    clients.ElementAt(privateMessage.mReceiver).Send(packet);
+                                    //clients.ElementAt(privateMessage.mReceiver).Send(packet);
                                 }
                             }
                             break;
                         case PacketType.onlineData:
                             OnlineDataPacket onlineData = (OnlineDataPacket)packet;
-                            foreach (Client onlineClient in clients)
+                            foreach (Client onlineClient in clients.Values)
                             {
                                 onlineClient.Send(packet);
                             }
@@ -127,8 +129,12 @@ namespace Server
             //close client and remove from concurrent bag
             finally
             {
-                client.Close();
-                clients.TryTake(out client);
+
+                for (int i = 0; i < clients.Count(); i++)
+                {
+                    clients[i].Close();
+                    clients.TryRemove(i, out client);
+                }
             }
 
         }

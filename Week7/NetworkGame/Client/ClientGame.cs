@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using Packets;
+using System.Net;
 
 namespace GameClient
 {
@@ -25,7 +26,9 @@ namespace GameClient
         public float targetX = 128;
         public float targetY;
 
+        UdpClient udpClient;
         TcpClient tcpClient;
+        IPEndPoint mEndpoint = new IPEndPoint(IPAddress.Any, 0);
         NetworkStream stream;
         BinaryReader reader;
         BinaryWriter writer;
@@ -40,6 +43,7 @@ namespace GameClient
             Content.RootDirectory = "Content";
 
             //set up tcp client and connect to server
+            udpClient = new UdpClient();
             tcpClient = new TcpClient();
             Connect("127.0.0.1", 4444);
             RunClient();
@@ -59,12 +63,13 @@ namespace GameClient
             try
             {
                 //connects to server
+                udpClient.Connect(ipAddreess, port);
                 tcpClient.Connect(ipAddreess, port);
                 stream = tcpClient.GetStream();
                 writer = new BinaryWriter(stream, Encoding.UTF8);
                 reader = new BinaryReader(stream, Encoding.UTF8);
                 formatter = new BinaryFormatter();
-
+                isConnected = true;
                 return true;
             }
             //if client fails to connect
@@ -80,22 +85,28 @@ namespace GameClient
             //mClientForm = new ClientForm(this);
 
             //sets up new thread
-            Thread threads = new Thread(ProcessServerResponse);
-            threads.Start();
+            Thread UDPThread = new Thread(UDPProcessServerResponse);
+            Thread TCPThread = new Thread(TCPProcessServerResponse);
+
+            Login();
+
+            UDPThread.Start();
+            TCPThread.Start();
 
         }
 
         //processes server responce
-        private void ProcessServerResponse()
+        private void UDPProcessServerResponse()
         {
-            int numberOfBytes;
+           
             //if connected to server
-            while (true)
+            
+            try
             {
-                //read data from server and deserialize
-                if ((numberOfBytes = reader.ReadInt32()) != 0)
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                while (true)
                 {
-                    byte[] buffer = reader.ReadBytes(numberOfBytes);
+                    byte[] buffer = udpClient.Receive(ref endPoint);
                     MemoryStream _stream = new MemoryStream(buffer);
                     Packet recievedPackage = formatter.Deserialize(_stream) as Packet;
 
@@ -108,6 +119,43 @@ namespace GameClient
                             player[1].position.X = positionDataPacket.mPosX;
                             player[1].position.Y = positionDataPacket.mPosY;
                             break;
+                        
+                    }
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("Client UDP Read Method exception: " +  e.Message);
+            }
+            
+
+            reader.Close();
+            writer.Close();
+            udpClient.Close();
+        }
+
+        //processes server responce
+        private void TCPProcessServerResponse()
+        {
+            int numberOfBytes;
+            //if connected to server
+            while (isConnected == true)
+            {
+                //read data from server and deserialize
+                if ((numberOfBytes = reader.ReadInt32()) != 0)
+                {
+                    byte[] buffer = reader.ReadBytes(numberOfBytes);
+                    MemoryStream _stream = new MemoryStream(buffer);
+                    Packet recievedPackage = formatter.Deserialize(_stream) as Packet;
+
+                    //if packet type is...
+                    switch (recievedPackage.mPacketType)
+                    {
+                        //send message to all
+                        case PacketType.login:
+                            LoginPacket loginPacket = (LoginPacket)recievedPackage;
+                            break;
+
                     }
                 }
             }
@@ -118,11 +166,20 @@ namespace GameClient
         }
 
         //serialize position data and send to server
-        public void SendPosition()
+        public void UDPSendPosition()
         {
             PositionPacket positionDataPacket = new PositionPacket(player[0].position.X, player[0].position.Y);
             MemoryStream msgStream = new MemoryStream();
             formatter.Serialize(msgStream, positionDataPacket);
+            byte[] buffer = msgStream.GetBuffer();
+            udpClient.Send(buffer, buffer.Length);
+        }
+
+        public void Login()
+        {
+            LoginPacket loginPacket = new LoginPacket((IPEndPoint)udpClient.Client.LocalEndPoint);
+            MemoryStream msgStream = new MemoryStream();
+            formatter.Serialize(msgStream, loginPacket);
             byte[] buffer = msgStream.GetBuffer();
             writer.Write(buffer.Length);
             writer.Write(buffer);
@@ -188,7 +245,7 @@ namespace GameClient
                 player[0].position.Y += 10;
 
             //serialize position as packet and send to server
-            SendPosition();
+            UDPSendPosition();
             base.Update(gameTime);
         }
 
