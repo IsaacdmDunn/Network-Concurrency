@@ -105,7 +105,7 @@ namespace Server
                             {
                                 if (i == privateMessage.mReceiver)
                                 {
-                                    //clients.ElementAt(privateMessage.mReceiver).Send(packet);
+                                    clients[i].Send(packet);
                                 }
                             }
                             break;
