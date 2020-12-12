@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Packets", "Packets\Packets.csproj", "{3D76B8BD-A612-4393-A037-F34999801937}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameClient", "MonoGameClient\MonoGameClient.csproj", "{4FB80946-7847-467E-9C91-88A0AADB0074}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,12 +41,6 @@ Global
 		{3D76B8BD-A612-4393-A037-F34999801937}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D76B8BD-A612-4393-A037-F34999801937}.Release|x86.ActiveCfg = Release|Any CPU
 		{3D76B8BD-A612-4393-A037-F34999801937}.Release|x86.Build.0 = Release|Any CPU
-		{4FB80946-7847-467E-9C91-88A0AADB0074}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{4FB80946-7847-467E-9C91-88A0AADB0074}.Debug|x86.ActiveCfg = Debug|x86
-		{4FB80946-7847-467E-9C91-88A0AADB0074}.Debug|x86.Build.0 = Debug|x86
-		{4FB80946-7847-467E-9C91-88A0AADB0074}.Release|Any CPU.ActiveCfg = Release|x86
-		{4FB80946-7847-467E-9C91-88A0AADB0074}.Release|x86.ActiveCfg = Release|x86
-		{4FB80946-7847-467E-9C91-88A0AADB0074}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
