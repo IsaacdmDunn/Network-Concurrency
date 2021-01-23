@@ -38,7 +38,7 @@ namespace GameClient
         public ClientGame()
         {
 
-            
+            //initise monogame
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
@@ -80,11 +80,10 @@ namespace GameClient
             }
         }
 
+        //starts the client and connects to the server
         public void RunClient()
         {
-            //mClientForm = new ClientForm(this);
-
-            //sets up new thread
+            //sets up TCP and UDP
             Thread UDPThread = new Thread(UDPProcessServerResponse);
             Thread TCPThread = new Thread(TCPProcessServerResponse);
 
@@ -98,14 +97,13 @@ namespace GameClient
         //processes server responce
         private void UDPProcessServerResponse()
         {
-           
-            //if connected to server
-            
             try
             {
                 IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                //receive data while connected to server
                 while (true)
                 {
+                    //receive packet
                     byte[] buffer = udpClient.Receive(ref endPoint);
                     MemoryStream _stream = new MemoryStream(buffer);
                     Packet recievedPackage = formatter.Deserialize(_stream) as Packet;
@@ -128,9 +126,7 @@ namespace GameClient
                 Console.WriteLine("Client UDP Read Method exception: " +  e.Message);
             }
             
-
-            reader.Close();
-            writer.Close();
+            //close UDP
             udpClient.Close();
         }
 
@@ -160,6 +156,7 @@ namespace GameClient
                 }
             }
 
+            //close TCP connection
             reader.Close();
             writer.Close();
             tcpClient.Close();
@@ -169,12 +166,13 @@ namespace GameClient
         public void UDPSendPosition()
         {
             PositionPacket positionDataPacket = new PositionPacket(player[0].position.X, player[0].position.Y);
-            MemoryStream msgStream = new MemoryStream();
-            formatter.Serialize(msgStream, positionDataPacket);
-            byte[] buffer = msgStream.GetBuffer();
+            MemoryStream messageStream = new MemoryStream();
+            formatter.Serialize(messageStream, positionDataPacket);
+            byte[] buffer = messageStream.GetBuffer();
             udpClient.Send(buffer, buffer.Length);
         }
 
+        //login to UDP connection
         public void Login()
         {
             LoginPacket loginPacket = new LoginPacket((IPEndPoint)udpClient.Client.LocalEndPoint);

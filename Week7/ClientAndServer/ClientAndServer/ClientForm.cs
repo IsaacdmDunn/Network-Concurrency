@@ -107,12 +107,8 @@ namespace ClientAndServer
                 DisconnectBtn.Enabled = false;
                 isConnected = false;
             }
-            
+
         }
 
-        public void UpdateOnlineCounter(int onlineCount)
-        {
-            OnlineCounter.Text = "Online: " + onlineCount.ToString();
-        }
     }
 }

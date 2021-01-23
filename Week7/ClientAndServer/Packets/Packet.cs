@@ -9,7 +9,6 @@ namespace Packets
         privateMessage,
         disconnectMessage,      
         connectMessage,
-        onlineData,
         empty
     }
 
@@ -87,16 +86,4 @@ namespace Packets
         }
     }
 
-    //connect message packet for connect message only needs sender 
-    [Serializable]
-    public class OnlineDataPacket : Packet
-    {
-        public int mOnlineCount;
-
-        public OnlineDataPacket(int onlineCount)
-        {
-            mOnlineCount = onlineCount;
-            mPacketType = PacketType.onlineData;
-        }
-    }
 }

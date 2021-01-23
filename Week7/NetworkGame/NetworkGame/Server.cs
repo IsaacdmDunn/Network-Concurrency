@@ -32,6 +32,7 @@ namespace Server
             listen.Start();
         }
 
+        //receives and deserizes UDP packets
         private void UDPListen()
         {
             try
@@ -44,14 +45,17 @@ namespace Server
                     MemoryStream stream = new MemoryStream(buffer);
                     BinaryFormatter binaryFormatter = new BinaryFormatter();
                     Packet packet = binaryFormatter.Deserialize(stream) as Packet;
+
+                    //applies packet data to all clients
                     foreach (Client onlineClient in clients)
                     {
+                        //checks if endpoint contains data
                         if (onlineClient.mEndPoint != null && endPoint.ToString() != onlineClient.mEndPoint.ToString())
                         {
                             switch (packet.mPacketType)
                             {
+                                //if position packet is sent by a client then send to all clients
                                 case PacketType.positionData:
-                                    //onlineClient.TCPSend(packet);
                                     
                                     MemoryStream memoryStream = new MemoryStream();
                                     binaryFormatter.Serialize(memoryStream, packet);
@@ -75,7 +79,6 @@ namespace Server
         //starts server
         public void Start()
         {
-
             clients = new ConcurrentBag<Client>();
             Socket socket;
             tcpListener.Start();
@@ -105,7 +108,7 @@ namespace Server
             tcpListener.Stop();
         }
 
-        //client method sends data from server program to client program
+        //TCP client method sends tcp packet from server program to client program
         private void TCPClientMethod(Client client)
         {
             Packet packet;
@@ -117,7 +120,7 @@ namespace Server
                 {
                     switch (packet.mPacketType)
                     {
-                        
+                        //sends login packet to allow connection to server
                         case PacketType.login:
                             LoginPacket loginPacket = (LoginPacket)packet;
                             client.mEndPoint = loginPacket.mEndPoint;

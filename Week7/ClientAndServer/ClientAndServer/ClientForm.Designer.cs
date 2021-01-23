@@ -45,8 +45,6 @@ namespace ClientAndServer
             this.UsernameInput = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.OnlineList = new System.Windows.Forms.TextBox();
-            this.OnlineCounter = new System.Windows.Forms.Label();
             this.UpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.ActivityTimer = new System.Windows.Forms.Timer(this.components);
             this.label3 = new System.Windows.Forms.Label();
@@ -106,30 +104,13 @@ namespace ClientAndServer
             this.label2.TabIndex = 6;
             this.label2.Text = "Username";
             // 
-            // OnlineList
-            // 
-            this.OnlineList.Location = new System.Drawing.Point(805, 29);
-            this.OnlineList.Multiline = true;
-            this.OnlineList.Name = "OnlineList";
-            this.OnlineList.Size = new System.Drawing.Size(182, 409);
-            this.OnlineList.TabIndex = 7;
-            // 
-            // OnlineCounter
-            // 
-            this.OnlineCounter.AutoSize = true;
-            this.OnlineCounter.Location = new System.Drawing.Point(805, 13);
-            this.OnlineCounter.Name = "OnlineCounter";
-            this.OnlineCounter.Size = new System.Drawing.Size(49, 13);
-            this.OnlineCounter.TabIndex = 8;
-            this.OnlineCounter.Text = "Online: 0";
-            // 
             // UpdateTimer
             // 
             this.UpdateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
             // 
             // ActivityTimer
             // 
-            this.ActivityTimer.Interval = 3600000;
+            this.ActivityTimer.Interval = 45000;
             this.ActivityTimer.Tick += new System.EventHandler(this.ActivityTimer_Tick);
             // 
             // label3
@@ -173,11 +154,9 @@ namespace ClientAndServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1002, 450);
+            this.ClientSize = new System.Drawing.Size(793, 450);
             this.Controls.Add(this.privateMessageBox);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.OnlineCounter);
-            this.Controls.Add(this.OnlineList);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.UsernameInput);
@@ -200,8 +179,6 @@ namespace ClientAndServer
         private System.Windows.Forms.TextBox UsernameInput;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox OnlineList;
-        private System.Windows.Forms.Label OnlineCounter;
         private System.Windows.Forms.Timer UpdateTimer;
         private System.Windows.Forms.Timer ActivityTimer;
         private System.Windows.Forms.Label label3;

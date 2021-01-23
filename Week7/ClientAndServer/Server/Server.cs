@@ -17,7 +17,6 @@ namespace Server
     class Server
     {
         ConcurrentDictionary<int, Client> clients;
-        //ConcurrentBag<Client> clients;
         TcpListener tcpListener;
 
         //constructor
@@ -109,13 +108,6 @@ namespace Server
                                 }
                             }
                             break;
-                        case PacketType.onlineData:
-                            OnlineDataPacket onlineData = (OnlineDataPacket)packet;
-                            foreach (Client onlineClient in clients.Values)
-                            {
-                                onlineClient.Send(packet);
-                            }
-                            break;
                         default:
                             break;
                     }
@@ -132,7 +124,7 @@ namespace Server
 
                 for (int i = 0; i < clients.Count(); i++)
                 {
-                    clients[i].Close();
+                    //clients[i].Close();
                     clients.TryRemove(i, out client);
                 }
             }

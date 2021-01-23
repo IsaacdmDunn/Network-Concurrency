@@ -22,6 +22,7 @@ namespace Server
         object readLock;
         object writeLock;
 
+        //constructor
         public Client(Socket _socket)
         {
             socket = _socket;
@@ -34,6 +35,7 @@ namespace Server
 
         }
 
+        //closes server
         public void Close()
         {
             socket.Shutdown(SocketShutdown.Both);
@@ -43,6 +45,7 @@ namespace Server
             socket.Close();
         }
 
+        //reads tcp packet data and deserializes it
         public Packet TCPRead()
         {
             lock (readLock)
@@ -61,6 +64,7 @@ namespace Server
             }
         }
 
+        //serialize TCP packet and sends to client
         public void TCPSend(Packet message)
         {
             lock (writeLock)
@@ -75,6 +79,7 @@ namespace Server
             }
         }
 
+        //serializes UDP packet and sends to user
         public void UDPSend(Packet message)
         {
             lock (writeLock)

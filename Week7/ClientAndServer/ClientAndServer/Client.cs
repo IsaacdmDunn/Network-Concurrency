@@ -128,10 +128,6 @@ namespace Server
                             PrivateMessagePacket privateMessagePacket = (PrivateMessagePacket)packet;
                             mClientForm.UpdateChatWindow(privateMessagePacket.mSender + "(" + privateMessagePacket.mReceiver + ")" + " Wispers: " + privateMessagePacket.mMessage);
                             break;
-                        case PacketType.onlineData:
-                            OnlineDataPacket onlineDataPacket = (OnlineDataPacket)packet;
-                            mClientForm.UpdateOnlineCounter(onlineDataPacket.mOnlineCount);
-                            break;
 
                     }
                 }
@@ -142,6 +138,7 @@ namespace Server
             tcpClient.Close();
         }
 
+        //sends public chat message
         public void SendChatMessage(string message, string username)
         {
             ChatMessagePacket messagePacket = new ChatMessagePacket(username, message);
@@ -153,6 +150,7 @@ namespace Server
             writer.Flush();
         }
 
+        //sends private chat packet
         public void SendPrivateMessage(string message, string username, int receiver)
         {
             PrivateMessagePacket messagePacket = new PrivateMessagePacket(username, message, receiver);
